@@ -12,6 +12,11 @@ void Canvas::setPixel(int x, int y, Color c) {
     pixels_[static_cast<size_t>(y) * width_ + x] = c;
 }
 
+Color Canvas::getPixel(int x, int y) const {
+    if (x < 0 || y < 0 || x >= width_ || y >= height_) return Color{0, 0, 0};
+    return pixels_[static_cast<size_t>(y) * width_ + x];
+}
+
 void Canvas::fill(Color c) {
     for (auto& p : pixels_) p = c;
 }

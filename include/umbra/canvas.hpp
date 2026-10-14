@@ -40,6 +40,10 @@ class Canvas {
     // dropped, so every drawing routine can write naively near edges.
     void setPixel(int x, int y, Color c);
 
+    // Reads a pixel back. Out-of-range reads return the colour (0, 0, 0).
+    // Used by the automated tests to check what a drawing routine produced.
+    Color getPixel(int x, int y) const;
+
     void fill(Color c);
 
     // Writes a binary PPM (P6) file. No compression, no dependency beyond
