@@ -36,5 +36,6 @@ foreach(test_src ${TEST_SOURCES})
   get_filename_component(test_name ${test_src} NAME_WE)
   add_executable(${test_name} ${test_src})
   target_link_libraries(${test_name} PRIVATE umbra_core)
-  add_test(NAME ${test_name} COMMAND ${test_name})
+  # Run from the repository root so tests can read levels/ and write to output/.
+  add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endforeach()
