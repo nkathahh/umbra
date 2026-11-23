@@ -39,3 +39,46 @@ foreach(test_src ${TEST_SOURCES})
   # Run from the repository root so tests can read levels/ and write to output/.
   add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endforeach()
+
+# ---- The OpenGL game (final version) ---------------------------------------
+# umbra_game opens a window and renders the level in real 3D with OpenGL 3.3:
+# textured walls, torch lighting in shaders, sprites, a minimap and a HUD.
+# GLFW (window and keyboard) is downloaded from GitHub the first time CMake
+# runs, so that first configure needs an internet connection. The OpenGL
+# function loader (glad) is generated code kept in external/glad.
+option(UMBRA_BUILD_GAME "Build the OpenGL game (downloads GLFW on first configure)" ON)
+
+# Optional: point at a GLFW that is already built instead of downloading it.
+# Normally left empty. (Used for testing on machines without GLFW's build
+# dependencies.)
+set(UMBRA_GLFW_INCLUDE_DIR "" CACHE PATH "Folder holding GLFW/glfw3.h (optional)")
+set(UMBRA_GLFW_LIBRARY "" CACHE FILEPATH "A prebuilt GLFW library (optional)")
+
+if(UMBRA_BUILD_GAME)
+  enable_language(C)
+
+  if(UMBRA_GLFW_INCLUDE_DIR AND UMBRA_GLFW_LIBRARY)
+    add_library(glfw UNKNOWN IMPORTED)
+    set_target_properties(glfw PROPERTIES
+      IMPORTED_LOCATION "${UMBRA_GLFW_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES "${UMBRA_GLFW_INCLUDE_DIR}")
+  else()
+    include(FetchContent)
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(glfw
+      GIT_REPOSITORY https://github.com/glfw/glfw.git
+      GIT_TAG 3.4
+      GIT_SHALLOW TRUE)
+    FetchContent_MakeAvailable(glfw)
+  endif()
+
+  add_library(glad STATIC external/glad/src/gl.c)
+  target_include_directories(glad PUBLIC external/glad/include)
+
+  file(GLOB GAME_SOURCES CONFIGURE_DEPENDS game/*.cpp)
+  add_executable(umbra_game ${GAME_SOURCES})
+  target_link_libraries(umbra_game PRIVATE umbra_core glad glfw ${CMAKE_DL_LIBS})
+endif()
