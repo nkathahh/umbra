@@ -13,30 +13,33 @@ UMBRA (first pitched as LUMEN, renamed before CP1) is a first-person dungeon eng
 
 Out of scope from the start: true 3D meshes, enemy AI, multiplayer, physics, a level editor and VR.
 
-## What exists now (end of CP2)
+## What exists now (final version)
 
 | Proposed | Status | Note |
 |---|---|---|
-| DDA raycasting | Done | `raycast`, used by the minimap, the view and the light shadow rays |
-| Distance fog | Done | Smoothstep blend toward the background |
-| Textured walls | Changed | A generated brick pattern stands in for image textures. Loading texture files is a CP3 option, once the window and keyboard are in place. |
-| Animated torch sprites | Done | Standing torches with flicker, glow and depth hiding |
-| Player movement and collision | Done in code, not yet live | `player` has turning, sliding collision and tests. Without a window there is no keyboard, so the walkthrough follows a route. Live control arrives with OpenGL in CP3. |
-| Minimap | Done and extended | Now animated: it scrolls, shows the lit field of view and flickering torches |
-| HUD | Not started | Needs a live window to be worth building. A bitmap font now exists to draw text. |
+| DDA raycasting | Done | The CP2 software renderer, the minimap view cone, and the light occlusion test in the OpenGL version |
+| Distance fog | Done | In the CP2 renderer and in the OpenGL shaders |
+| Textured walls | Done | Generated brick, stone and ceiling textures, mapped in OpenGL with mipmaps |
+| Animated torch sprites | Done | Billboards with flickering flames and glow, hidden by walls |
+| Player movement and collision | Done | Live keyboard control in the OpenGL window, sliding along walls |
+| Minimap | Done | Drawn every frame as an overlay, with the view cone and the relics still to find |
+| HUD | Done | Relic counter, position, frame rate and controls |
 
 ## Added beyond the proposal
 
+- Collectable relics: spinning 3D crystals with a counter, so the game has a goal
+- Three levels (The Cellars, The Crypt, The Great Hall): finding every relic opens the next
+- A guided tour mode that flies the camera along a smooth route
 - Torch light that shines on nearby bricks and flickers, with shadow rays so walls behind walls stay dark
 - Matrix transformations (translate, rotate, scale, shear, reflect, compose, invert)
 - An animation system: easing, keyframes, arc-length path following
 - Our own GIF encoder, so animations can be produced and shared without any library
 - A built-in bitmap font so every figure carries its own labels
-- An automated test suite covering both checkpoints
+- An automated test suite covering every stage (CP1, CP2 and the final version)
 
 ## Removed
 
-Nothing has been removed. Image textures and the HUD have moved from CP2 to CP3.
+Nothing has been removed. Image files for textures were replaced by textures generated in code.
 
 ## Recommendations and lessons
 
@@ -44,4 +47,5 @@ Nothing has been removed. Image textures and the HUD have moved from CP2 to CP3.
 - Keep one module per person. Each member's code lives in its own files, so pull requests rarely conflict.
 - Plan merge order early when modules depend on each other (text and GIF writer first, then matrix and animation, then sprites, then the view).
 - Write tests with the code. The GIF compressor was checked by decoding its own output with an independent decoder, which gives real confidence that the compression is correct.
-- For CP3: add GLFW and a window loop, move the frame buffer into a texture, read the keyboard for the player, then consider real wall textures and a HUD.
+- Keep the drawing separate from the logic. The OpenGL version replaced only the drawing; the map, player, collision, animation and minimap code came across unchanged.
+- Bake what does not change. Light occlusion is worked out once when the level loads, so the shader stays simple and fast.
