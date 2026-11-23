@@ -10,6 +10,7 @@
 //   .  floor
 //   P  player start (floor)
 //   T  torch (floor)
+//   R  relic (floor), a collectable in the OpenGL game
 #pragma once
 
 #include <string>
@@ -26,6 +27,7 @@ struct GridMap {
     std::vector<char> cells;       // row-major, size width * height
     Point2d playerStart{1.5, 1.5}; // in map units (cell centre)
     std::vector<Point2d> torches;  // in map units (cell centres)
+    std::vector<Point2d> relics;   // 'R' cells: the collectables in the OpenGL game
 
     bool inBounds(int x, int y) const { return x >= 0 && y >= 0 && x < width && y < height; }
 

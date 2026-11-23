@@ -48,6 +48,10 @@ bool parseMap(const std::string& text, GridMap& out, std::string* error) {
                     map.cells.push_back('.');
                     map.torches.push_back({x + 0.5, y + 0.5});
                     break;
+                case 'R':
+                    map.cells.push_back('.');
+                    map.relics.push_back({x + 0.5, y + 0.5});
+                    break;
                 default:
                     return fail(std::string("unknown character '") + c + "' at row " + std::to_string(y) +
                                 ", column " + std::to_string(x));
