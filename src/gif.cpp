@@ -38,7 +38,7 @@ Color average(const std::vector<Color>& c) {
 
 int nearest(const std::vector<Color>& pal, int r, int g, int b) {
     int best = 0;
-    long bestD = 1L << 60;
+    long bestD = 2147483647L;  // largest 32-bit value; a real distance is at most about 600,000
     for (size_t i = 0; i < pal.size(); ++i) {
         long dr = r - pal[i].r, dg = g - pal[i].g, db = b - pal[i].b;
         long d = dr * dr * 3 + dg * dg * 4 + db * db * 2;  // green counts most to the eye
